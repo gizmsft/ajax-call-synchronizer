@@ -1,30 +1,35 @@
 const { src, dest } = require('gulp');
 const uglifyPlugin = require('gulp-uglify');
 const renamePlugin = require('gulp-rename');
+const sourceMapPlugin = require('gulp-sourcemaps');
 
 var copyJsTask = function (callback) {
-    src('./lib/*.js')
-        .pipe(dest('./dist/js'));
+  src([
+    './lib/ajax-call-synchronizer.js'])
+    .pipe(dest('./dist/js'));
 
-    callback();
+  callback();
 }
 
 var minifyJsTask = function (callback) {
-    src('./lib/*.js')
-        .pipe(uglifyPlugin())
-        .pipe(renamePlugin(function (path) {
-            path.basename += '.min';
-        }))
-        .pipe(dest('./dist/js'));
+  src([
+    './lib/ajax-call-synchronizer.js'])
+    .pipe(sourceMapPlugin.init())
+    .pipe(uglifyPlugin())
+    .pipe(renamePlugin(function (path) {
+      path.basename += '.min';
+    }))
+    .pipe(sourceMapPlugin.write('.'))
+    .pipe(dest('./dist/js'));
 
-    callback();
+  callback();
 }
 
 var defaultTask = function (callback) {
-    copyJsTask(callback);
-    minifyJsTask(callback);
+  copyJsTask(callback);
+  minifyJsTask(callback);
 
-    callback();
+  callback();
 }
 
 exports.copyJs = copyJsTask;
